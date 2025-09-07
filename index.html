@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manajemen Tugas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Sistem Manajemen Tugas</h1>
+        </header>
+        
+        <div class="task-form">
+            <h2>Tambah Tugas Baru</h2>
+            <form id="addTaskForm">
+                <input type="text" id="title" placeholder="Judul tugas" required>
+                <textarea id="description" placeholder="Deskripsi tugas"></textarea>
+                <button type="submit">Tambah Tugas</button>
+            </form>
+        </div>
+        
+        <div class="tasks-list">
+            <h2>Daftar Tugas</h2>
+            <div id="tasksContainer"></div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
