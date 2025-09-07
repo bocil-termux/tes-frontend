@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://backend-five-iota-10.vercel.app/';
+const API_BASE_URL = 'https://backend-five-iota-10.vercel.app/api/tasks';
 
 document.addEventListener('DOMContentLoaded', () => {
     const taskForm = document.getElementById('addTaskForm');
