@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Manajemen Tugas</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        header h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-left: 10px;
+        }
+
+        .status-connected {
+            background-color: #2ecc71;
+            color: white;
+        }
+
+        .status-disconnected {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .task-form {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .task-form h2 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+        }
+
+        .task-form h2 i {
+            margin-right: 10px;
+            color: #3498db;
+        }
+
+        form input, form textarea {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+
+        form input:focus, form textarea:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        form button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        form button:hover {
+            background: #2980b9;
+        }
+
+        form button i {
+            margin-right: 8px;
+        }
+
+        .tasks-list {
+            margin-bottom: 20px;
+        }
+
+        .tasks-list h2 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+        }
+
+        .tasks-list h2 i {
+            margin-right: 10px;
+            color: #3498db;
+        }
+
+        #tasksContainer {
+            display: grid;
+            gap: 15px;
+        }
+
+        .task-item {
+            padding: 20px;
+            background: #fff;
+            border-radius: 10px;
+            border-left: 5px solid #3498db;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .task-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .task-item.completed {
+            border-left-color: #27ae60;
+            opacity: 0.9;
+            background: #f8fff9;
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .task-title {
+            font-weight: bold;
+            font-size: 18px;
+            color: #2c3e50;
+        }
+
+        .task-item.completed .task-title {
+            text-decoration: line-through;
+            color: #7f8c8d;
+        }
+
+        .task-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .task-actions button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .btn-complete {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-complete:hover {
+            background: #219653;
+        }
+
+        .btn-incomplete {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-incomplete:hover {
+            background: #e67e22;
+        }
+
+        .btn-delete {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #c0392b;
+        }
+
+        .task-description {
+            margin-bottom: 12px;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .task-date {
+            font-size: 12px;
+            color: #95a5a6;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: #7f8c8d;
+            font-size: 18px;
+        }
+
+        .loading i {
+            display: block;
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: #3498db;
+            animation: spin 1.5s linear infinite;
+        }
+
+        .error {
+            color: #e74c3c;
+            padding: 15px;
+            background: #fadbd8;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            animation: shake 0.5s ease;
+        }
+
+        .error i {
+            margin-right: 10px;
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid #3498db;
+            background: white;
+            color: #3498db;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active {
+            background: #3498db;
+            color: white;
+        }
+
+        .filter-btn:hover {
+            background: #3498db;
+            color: white;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .task-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .task-actions {
+                margin-top: 10px;
+                width: 100%;
+                justify-content: space-between;
+            }
+            
+            .task-actions button {
+                flex: 1;
+                justify-content: center;
+            }
+            
+            .filters {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Sistem Manajemen Tugas <span id="statusIndicator" class="status-indicator status-disconnected">Disconnected</span></h1>
+            <p>Kelola tugas Anda dengan mudah dan efisien</p>
+        </header>
+        
+        <div class="task-form">
+            <h2><i class="fas fa-plus-circle"></i> Tambah Tugas Baru</h2>
+            <form id="addTaskForm">
+                <input type="text" id="title" placeholder="Judul tugas" required>
+                <textarea id="description" placeholder="Deskripsi tugas" rows="3"></textarea>
+                <button type="submit"><i class="fas fa-plus"></i> Tambah Tugas</button>
+            </form>
+        </div>
+        
+        <div class="filters">
+            <button class="filter-btn active" onclick="filterTasks('all')">Semua Tugas</button>
+            <button class="filter-btn" onclick="filterTasks('active')">Tugas Aktif</button>
+            <button class="filter-btn" onclick="filterTasks('completed')">Tugas Selesai</button>
+        </div>
+        
+        <div class="tasks-list">
+            <h2><i class="fas fa-tasks"></i> Daftar Tugas</h2>
+            <div id="tasksContainer">
+                <div class="loading">
+                    <i class="fas fa-spinner"></i>
+                    Memuat tugas...
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Dibuat dengan ❤️ menggunakan HTML, CSS, JavaScript, Node.js, dan MongoDB</p>
+        </footer>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://backend-five-iota-10.vercel.app';
+        let allTasks = [];
+        let currentFilter = 'all';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const taskForm = document.getElementById('addTaskForm');
+            const tasksContainer = document.getElementById('tasksContainer');
+            
+            // Test koneksi backend saat halaman dimuat
+            testConnection();
+            
+            // Muat tugas saat halaman dimuat
+            loadTasks();
+            
+            // Handle form submission
+            taskForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const title = document.getElementById('title').value;
+                const description = document.getElementById('description').value;
+                
+                try {
+                    await addTask(title, description);
+                    taskForm.reset();
+                    loadTasks();
+                } catch (error) {
+                    showError('Gagal menambah tugas: ' + error.message);
+                }
+            });
+        });
+
+        // Test koneksi ke backend
+        async function testConnection() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/health`);
+                if (response.ok) {
+                    document.getElementById('statusIndicator').textContent = 'Connected';
+                    document.getElementById('statusIndicator').className = 'status-indicator status-connected';
+                }
+            } catch (error) {
+                console.error('Koneksi backend gagal:', error);
+            }
+        }
+        
+        // Fungsi untuk memuat tugas
+        async function loadTasks() {
+            try {
+                displayLoading();
+                const response = await fetchWithTimeout(`${API_BASE_URL}/api/tasks`, {}, 5000);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                allTasks = await response.json();
+                applyFilter();
+            } catch (error) {
+                showError('Gagal memuat tugas: ' + error.message);
+            }
+        }
+        
+        // Fungsi untuk menampilkan tugas berdasarkan filter
+        function applyFilter() {
+            let filteredTasks = allTasks;
+            
+            if (currentFilter === 'active') {
+                filteredTasks = allTasks.filter(task => !task.completed);
+            } else if (currentFilter === 'completed') {
+                filteredTasks = allTasks.filter(task => task.completed);
+            }
+            
+            displayTasks(filteredTasks);
+        }
+        
+        // Fungsi untuk mengatur filter
+        function filterTasks(filter) {
+            currentFilter = filter;
+            
+            // Update tombol filter
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            applyFilter();
+        }
+        
+        // Fungsi untuk menampilkan loading
+        function displayLoading() {
+            const tasksContainer = document.getElementById('tasksContainer');
+            tasksContainer.innerHTML = `
+                <div class="loading">
+                    <i class="fas fa-spinner"></i>
+                    Memuat tugas...
+                </div>
+            `;
+        }
+        
+        // Fungsi untuk menampilkan tugas
+        function displayTasks(tasks) {
+            const tasksContainer = document.getElementById('tasksContainer');
+            
+            if (tasks.length === 0) {
+                let message = 'Tidak ada tugas.';
+                if (currentFilter === 'active') message = 'Tidak ada tugas aktif.';
+                if (currentFilter === 'completed') message = 'Tidak ada tugas selesai.';
+                
+                tasksContainer.innerHTML = `
+                    <div class="loading">
+                        <i class="fas fa-inbox"></i>
+                        ${message}
+                    </div>
+                `;
+                return;
+            }
+            
+            tasksContainer.innerHTML = '';
+            tasks.forEach(task => {
+                const taskElement = document.createElement('div');
+                taskElement.className = `task-item ${task.completed ? 'completed' : ''}`;
+                taskElement.innerHTML = `
+                    <div class="task-header">
+                        <span class="task-title">${task.title}</span>
+                        <div class="task-actions">
+                            <button class="${task.completed ? 'btn-incomplete' : 'btn-complete'}" onclick="toggleTask('${task._id}', ${!task.completed})">
+                                <i class="fas ${task.completed ? 'fa-undo' : 'fa-check'}"></i> ${task.completed ? 'Batal' : 'Selesai'}
+                            </button>
+                            <button class="btn-delete" onclick="deleteTask('${task._id}')">
+                                <i class="fas fa-trash"></i> Hapus
+                            </button>
+                        </div>
+                    </div>
+                    <div class="task-description">${task.description || 'Tidak ada deskripsi'}</div>
+                    <div class="task-date">Dibuat: ${new Date(task.createdAt).toLocaleString('id-ID')}</div>
+                `;
+                tasksContainer.appendChild(taskElement);
+            });
+        }
+        
+        // Fungsi untuk menambah tugas
+        async function addTask(title, description) {
+            const response = await fetchWithTimeout(`${API_BASE_URL}/api/tasks`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ title, description })
+            }, 5000);
+            
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Gagal menambah tugas');
+            }
+            
+            return response.json();
+        }
+        
+        // Fungsi untuk menghapus tugas
+        async function deleteTask(id) {
+            if (!confirm('Apakah Anda yakin ingin menghapus tugas ini?')) return;
+            
+            try {
+                const response = await fetchWithTimeout(`${API_BASE_URL}/api/tasks/${id}`, {
+                    method: 'DELETE'
+                }, 5000);
+                
+                if (!response.ok) {
+                    throw new Error('Gagal menghapus tugas');
+                }
+                
+                loadTasks();
+            } catch (error) {
+                showError('Gagal menghapus tugas: ' + error.message);
+            }
+        }
+        
+        // Fungsi untuk mengubah status tugas
+        async function toggleTask(id, completed) {
+            try {
+                const response = await fetchWithTimeout(`${API_BASE_URL}/api/tasks/${id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ completed })
+                }, 5000);
+                
+                if (!response.ok) {
+                    throw new Error('Gagal mengubah status tugas');
+                }
+                
+                loadTasks();
+            } catch (error) {
+                showError('Gagal mengubah status tugas: ' + error.message);
+            }
+        }
+        
+        // Fungsi fetch dengan timeout
+        async function fetchWithTimeout(resource, options = {}, timeout = 8000) {
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), timeout);
+            
+            const response = await fetch(resource, {
+                ...options,
+                signal: controller.signal  
+            });
+            
+            clearTimeout(id);
+            return response;
+        }
+        
+        // Fungsi untuk menampilkan error
+        function showError(message) {
+            const tasksContainer = document.getElementById('tasksContainer');
+            const errorElement = document.createElement('div');
+            errorElement.className = 'error';
+            errorElement.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+            
+            // Tambahkan error di atas daftar tugas
+            tasksContainer.parentNode.insertBefore(errorElement, tasksContainer);
+            
+            // Hapus error setelah 5 detik
+            setTimeout(() => {
+                errorElement.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
